@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* 原理 先將兩張疊再一起 將其中一張轉180度 在整個一起轉180度 達到翻牌的效果 */
+        #game {
+            width: 300px;
+        }
+
+        .card {
+            width: 50px;
+            height: 90px;
+            position: relative;
+            /* 設定子元素(下面0層)在 3D 空間內 */
+            transform-style: preserve-3d;
+            /* 翻牌動畫的速度 */
+            transition: transform 0.5s;
+            float: left;
+            margin: 10px;
+        }
+
+        .card-front {
+            width: 100%;
+            height: 100%;
+            background-image: url(../cards/1H.jpg);
+            background-position: center;
+            background-repeat: no-repeat;
+            /* contain 等比縮放填滿 */
+            background-size: contain;
+            position: absolute;
+            transform: rotateY(180deg);
+        }
+
+        .card-back {
+            width: 100%;
+            height: 100%;
+            background-image: url(../cards/Red_back.jpg);
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            position: absolute;
+            /* 翻過來後隱藏背面 */
+            /* mac 系統要加 win 系統不用加 */
+            backface-visibility: hidden;
+            -web-backface-visibility: hidden;
+        }
+
+        /* 翻牌 */
+        .card-open {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+
+<body>
+    <script src="../jquery-3.6.0.min.js"></script>
+    <!-- 若讀不到 可以加 https: -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <div id="game">
+
+    </div>
+    </div>
+    <script>
+        // 跑16次迴圈產生16張片把卡片排列出來
+        for (let i = 0; i < 16; i++) {
+            $('#game').append(`
+        <div class="card">
+            <div class="card-front"></div>
+          <div class="card-back"></div>
+        </div>
+      `)
+        }
+
+        // 決定數字並打散
+        for (let i = 0; i < 16; i++) {
+            // 決定數字
+            // 八張牌裡 算每一張牌的數字是什麼 因為八張 所以用0~15除以8的餘數+1來決定數字 
+            let number = i % (16 / 2) + 1
+            // 根據找到的資料換牌
+            $('.card').eq(i).find('.card-front').css('background-image', `url(../cards/${number}H.jpg)`)
+            // https://www.w3schools.com/tags/att_global_data.asp 用 data 開頭+資料名稱
+            $('.card').eq(i).attr('data-card', number)
+
+            // 打散
+            // 0~15 隨機 因為有16張牌 所以 eq 是 0~15(陣列)
+            let target = Math.floor(Math.random() * 16)
+            // 將第隨機個卡片插入迴圈跑出來照順序的第1 2 3...卡片後面
+            $('.card').eq(target).insertAfter($('.card').eq(i))
+        }
+        // 因為卡片是後面出來用.append() 新增上去的 所以要用 .on 當點到卡片時要做的動作
+        $('#game').on('click', '.card', function () {
+            // 限制最多只能翻兩張牌
+            if ($('.card-open').length < 2 && !$(this).hasClass('card-open')) {
+                $(this).addClass('card-open')
+            }
+            // 不能用 else if 因為要同時判斷
+            if ($('.card-open').length === 2) {
+                // 翻開兩張 若第一張牌(eq(0)) 的屬性值 data-card 和第二張牌(eq(0)) 的屬性值 data-card 一樣
+                if ($('.card-open').eq(0).attr('data-card') === $('.card-open').eq(1).attr('data-card')) {
+                    // 當翻到兩張一樣的 淡出 並新增一個 card-clear 的 class 用來計算翻到兩張一樣的次數
+                    $('.card-open').fadeTo(1000, 0).addClass('card-clear')
+                }
+
+                // 不管一不一樣 隔一秒都翻回來
+                setTimeout(() => {
+                    $('.card-open').removeClass('card-open')
+                }, 1000);
+            }
+            // 若16張牌全部翻完
+            if ($('.card-clear').length == 16) {
+                Swal.fire({
+                    title: '恭喜過關'
+                })
+            }
+        })
+    </script>
+</body>
+
+</html>
