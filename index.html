@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .card {
+      width: 50px;
+      height: 90px;
+      position: relative;
+      /* 設定子元素在 3D 空間內 */
+      transform-style: preserve-3d;
+      transition: transform .5s;
+    }
+    .card-back {
+      width: 100%;
+      height: 100%;
+      background-image: url(./cards/Red_back.jpg);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+      position: absolute;
+      /* 翻過來後隱藏背面 */
+      backface-visibility: hidden;
+      -web-backface-visibility: hidden;
+    }
+    .card-front {
+      width: 100%;
+      height: 100%;
+      background-image: url(./cards/1H.jpg);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+      position: absolute;
+      transform: rotateY(180deg);
+    }
+    .card-open {
+      transform: rotateY(180deg);
+    }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <div class="card">
+      <div class="card-back"></div>
+      <div class="card-front"></div>
+    </div>
+  </div>
+</body>
+</html>
