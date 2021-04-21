@@ -70,62 +70,88 @@
     <div id="game">
         <input type="button" value="開始" id="btn-start">
         <input type="button" value="下一關" id="btn-next">
-        <p>Time:<span id="text-time">-</span></p>
         <p>Stage:<span id="text-stage">-</span></p>
-
+        <p>Time:<span id="text-time">-</span> Sec</p>
+        <p>Score: <span id="text-score">-</span> Sec</p>
+        <br>
+        <p id="wr">World Records:</p>
+        <p>Player: <span id="highscore-player">-</span></p>
+        <p>Score: <span id="highscore-score">-</span> Sec</p>
     </div>
 
     <script>
         let countdown = 10
-        let timer = 0
-        let stage = 1
-        // 雪花效果
-        const snow = () => {
-            var duration = 1 * 1000;
-            var animationEnd = Date.now() + duration;
-            var skew = 1;
 
-            function randomInRange(min, max) {
-                return Math.random() * (max - min) + min;
-            }
-
-            (function frame() {
-                var timeLeft = animationEnd - Date.now();
-                var ticks = Math.max(200, 500 * (timeLeft / duration));
-                skew = Math.max(0.8, skew - 0.001);
-
-                confetti({
-                    particleCount: 1,
-                    startVelocity: 0,
-                    ticks: ticks,
-                    origin: {
-                        x: Math.random(),
-                        // since particles fall down, skew start toward the top
-                        y: (Math.random() * skew) - 0.2
-                    },
-                    colors: ['#ffffff'],
-                    shapes: ['circle'],
-                    gravity: randomInRange(0.4, 0.6),
-                    scalar: randomInRange(0.4, 1),
-                    drift: randomInRange(-0.4, 0.4)
-                });
-
-                if (timeLeft > 0) {
-                    requestAnimationFrame(frame);
-                }
-            }());
-        }
         // 倒數計時
         // 倒數計時 因為 clearInterval 會把變數也一起清掉 所以設定 timer=0
+        let timer = 0
+        let stage = 1
+        let score = 0
+        // 設定一個空的 JSON 放 name score
+        let highscore = { name: '', score: 0 }
+
+        // 定義一個變數 抓儲存在網頁 localStorage 的資料
+        const highStorage = JSON.parse(localStorage.getItem('card'))
+
+        // 若抓出來的資料 的資料不是空的
+        if (highStorage !== null) {
+
+            // 將最高分紀錄改寫
+            highscore = highStorage
+
+            // 改寫顯示的最高分數和使用者
+            $('#highscore-player').text(`${highscore.name}`)
+            $('#highscore-score').text(`${highscore.score}`)
+        }
+
+        // 彩帶效果
+        const con = () => {
+            var count = 200;
+            var defaults = {
+                origin: { y: 0.7 }
+            };
+
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+
+            fire(0.25, {
+                spread: 26,
+                startVelocity: 55,
+            });
+            fire(0.2, {
+                spread: 60,
+            });
+            fire(0.35, {
+                spread: 100,
+                decay: 0.91,
+                scalar: 0.8
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 25,
+                decay: 0.92,
+                scalar: 1.2
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 45,
+            });
+        }
 
         // 一開始先隱藏下一關按鈕
         $('#btn-next').hide()
 
-        // 第一關-----------------------------------------------------------------------------------------
+        // 第 stage 關-----------------------------------------------------------------------------------------
         // 點擊開始按鈕要做的事
         $('#btn-start').click(function () {
+
             // 底下 startStage 的 function 跑完之後在看要傳第幾關的 function 進去
+            // 呼叫 function
             startStage(stage)
+
             // 關閉開始按鈕
             $(this).attr('disabled', true)
         })
@@ -142,34 +168,38 @@
             // 卡片的張數
             const cards = stage * 2
             for (let i = 0; i < cards; i++) {
-                $('#game').append(`
-                    <div class="card">
+                $('#game').append(
+                    `<div class="card">
                         <div class="card-front"></div>
                         <div class="card-back"></div>
-                    </div>
-                `)
+                    </div>`)
             }
+
             for (let i = 0; i < cards; i++) {
                 // 決定數字
                 // 算每一張牌的數字是什麼 用餘數+1來決定數字 
                 let number = i % (cards / 2) + 1
+
                 // 根據找到的資料換牌
                 $('.card').eq(i).find('.card-front').css('background-image', `url(../cards/${number}H.jpg)`)
+
                 // https://www.w3schools.com/tags/att_global_data.asp 用 data 開頭+資料名稱
                 $('.card').eq(i).attr('data-card', number)
 
                 // 打散
                 // 隨機 0~卡片數 
                 let target = Math.floor(Math.random() * cards)
+
                 // 將第隨機個卡片插入迴圈跑出來照順序的第1 2 3...張卡片後
                 $('.card').eq(target).insertAfter($('.card').eq(i))
             }
 
-            // 改時間
-            $('#text-time').text(countdown)
-
-            // 改關卡數
+            // 改顯示關卡數
             $('#text-stage').text(stage)
+
+            // 改顯示時間
+            // 先寫一個在 function 裡才不會有延遲 否則會等設定的延遲時間後才跑
+            $('#text-time').text(countdown)
 
             // 倒數計時
             timer = setInterval(() => {
@@ -177,7 +207,7 @@
                 // 過一秒秒數-1
                 countdown--
 
-                // 改秒數
+                // 改顯示秒數
                 $('#text-time').text(countdown)
 
                 // 若秒數<=0 要做的事
@@ -188,8 +218,7 @@
             }, 1000);
         }
 
-
-        // 因為卡片是後面出來用.append() 新增上去的 所以要用 .on 當點到卡片時要做的動作
+        // 點到卡片時要做的動作 因為卡片是後面出來用.append() 新增上去的 所以要用 .on 
         $('#game').on('click', '.card', function () {
 
             // 限制最多只能翻兩張牌
@@ -206,23 +235,63 @@
                 // 不管一不一樣 隔一秒都翻回來
                 setTimeout(() => {
 
-                    // 取消翻牌的 class
+                    // 一秒鐘後取消翻牌的 class
                     $('.card-open').removeClass('card-open')
                 }, 1000)
             }
 
             // 下一關-----------------------------------------------------------------------------------------
-            // 若翻對的組數(兩張一樣的一組)=卡片的組數(正反兩張一組) 要做的事
+            // 若翻對的組數(兩張一樣的一組)=卡片的張數(正反兩張疊在一張) 要做的事
             if ($('.card-clear').length == $('.card').length) {
                 // 顯示下一關按鈕
                 $('#btn-next').show()
                 // 倒數停止
                 clearInterval(timer)
-                snow()
+
 
                 // 設計三關 第三關結束後要做的事
                 if (stage == 3) {
-                    alert('77777')
+
+                    // 分數加總
+                    score += countdown
+                    $('#text-score').text(score)
+
+                    // 開放開始按鈕
+                    $('#btn-start').attr('disabled', false)
+
+                    // 隱藏下一關按鈕
+                    $('#btn-next').hide()
+
+                    // 噴彩帶
+                    con()
+
+                    // 回到第一關
+                    stage -= 2
+
+                    // 遊戲結束後若目前分數>最高分
+                    if (score > highscore.score) {
+
+                        // 改掉最高分為目前分數
+                        highscore.score = score
+
+                        // 改掉使用者名稱
+                        highscore.name = prompt('最高分! 請輸入名字')
+
+                        // 若使用者名稱是空的
+                        if (highscore.name === null || highscore.name.length === 0) {
+                            highscore.name = 'None'
+                        }
+
+                        // 改掉顯示分數和使用者名稱(網頁上的元素)
+                        $('#highscore-player').text(`${highscore.name}`)
+                        $('#highscore-score').text(`${highscore.score}`)
+
+                        // 將最高分的紀錄存進網頁 localStorage.setItem(存 card 的資料在網頁中 關機後不會消失) value 必須是文字
+                        localStorage.setItem('card', JSON.stringify(highscore))
+                    }
+
+                    // 結束後分數歸0
+                    score = 0
                 }
             }
         })
@@ -233,7 +302,14 @@
             // 關卡數+1
             stage++
 
+            // 分數相加
+            score += countdown
+
+            // 改顯示分數
+            $('#text-score').text(score)
+
             // 跑關卡數 function 
+            // 呼叫 function
             startStage(stage)
 
             // 下一關按鈕隱藏
