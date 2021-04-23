@@ -6,41 +6,109 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-
+    <link rel="stylesheet" href="./font/game-of-thrones/GameofThrones.css">
     <style>
         /* 原理 先將兩張疊再一起 將其中一張轉180度 在整個一起轉180度 達到翻牌的效果 */
         body {
-            background: lightseagreen;
+            background: lightblue;
+            background-size: cover;
+            font-family: 'Game of Thrones';
+            font-weight: normal;
+            font-style: normal;
+            text-shadow: 5px 5px 10px grey;
         }
 
+
         #game {
-            width: 300px;
+            width: 500px;
+        }
+
+        .container-menu {
+            position: fixed;
+        }
+
+
+        .container-m {
+            width: 500px;
+            position: fixed;
+            left: 300px;
+            top: 180px;
+            float: left;
+        }
+
+        .container-s {
+            width: 500px;
+            position: fixed;
+            left: 420px;
+            bottom: 450px;
+            float: right;
+        }
+
+        #mem {
+            position: absolute;
+            left: 317px;
+            bottom: 580px;
+            color: lightcoral;
+            text-shadow: 5px 5px 10px lightcoral;
+        }
+
+        #sil {
+            position: absolute;
+            left: 937px;
+            bottom: 580px;
+            color: lightgreen;
+            text-shadow: 5px 5px 10px lightgreen;
+        }
+
+        #btn-start {
+            background-image: url(./start.png);
+            background-size: cover;
+            background-position: center center;
+            width: 200px;
+            height: 100px;
+            cursor: pointer;
         }
 
         .card-m {
-            width: 50px;
-            height: 90px;
+            width: 100px;
+            height: 140px;
             position: relative;
+            /* left: 300px; */
+            /* top: 300px; */
             /* 設定子元素(下面0層)在 3D 空間內 */
             transform-style: preserve-3d;
             /* 翻牌動畫的速度 */
             transition: transform 1s;
-            float: left;
-            left: 100px;
+            /* float: left; */
             margin: 10px;
+            /* bottom: 280px; */
+            cursor: pointer;
+            /* display: inline-flex;
+            justify-content: flex-start;
+            flex-wrap: wrap; */
+            float: left;
+
         }
 
         .card-s {
-            width: 50px;
-            height: 90px;
+            width: 100px;
+            height: 140px;
             position: relative;
+            left: 500px;
+            top: 300px;
             /* 設定子元素(下面0層)在 3D 空間內 */
             transform-style: preserve-3d;
             /* 翻牌動畫的速度 */
             transition: transform 1s;
-            float: right;
-            left: 600px;
+            /* float: right; */
             margin: 10px;
+            /* bottom: 280px; */
+            cursor: pointer;
+            /* display: inline-flex;
+            justify-content: flex-start;
+            flex-wrap: wrap; */
+            float: left;
+
         }
 
         .card-front {
@@ -50,7 +118,7 @@
             background-position: center;
             background-repeat: no-repeat;
             /* contain 等比縮放填滿 */
-            background-size: contain;
+            background-size: cover;
             position: absolute;
             transform: rotateY(180deg);
         }
@@ -58,7 +126,7 @@
         .card-back {
             width: 100%;
             height: 100%;
-            background-image: url(./back/back.jpg);
+            background-image: url(./back/back1.png);
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
@@ -66,7 +134,7 @@
             /* 翻過來後隱藏背面 */
             /* mac 系統要加 win 系統不用加 */
             backface-visibility: hidden;
-            -web-backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
 
         /* 翻牌 */
@@ -82,19 +150,25 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
     <div id="game">
-        <input type="button" value="開始" id="btn-start">
-        <input type="button" value="下一關" id="btn-next">
-        <p>Stage:<span id="text-stage">-</span></p>
-        <p>Time:<span id="text-time">-</span> Sec</p>
-        <p>Score: <span id="text-score">-</span> Sec</p>
-        <br>
-        <p id="wr">World Records:</p>
-        <p>Player: <span id="highscore-player">-</span></p>
-        <p>Score: <span id="highscore-score">-</span> Sec</p>
+        <div class="container-m"></div>
+        <div class="container-s"></div>
+        <div class="container-menu">
+            <input type="button" value="" id="btn-start">
+            <input type="button" value="下一關" id="btn-next">
+            <p>Stage:<span id="text-stage">-</span></p>
+            <p>Time:<span id="text-time">-</span> Sec</p>
+            <p>Score: <span id="text-score">-</span> Sec</p>
+            <br>
+            <p id="wr">World Records:</p>
+            <p>Player: <span id="highscore-player">-</span></p>
+            <p>Score: <span id="highscore-score">-</span> Sec</p>
+        </div>
+        <p id="mem">members:</p>
+        <p id="sil">sigils:</p>
     </div>
 
     <script>
-        let countdown = 10
+        let countdown = 30
 
         // 倒數計時
         // 倒數計時 因為 clearInterval 會把變數也一起清掉 所以設定 timer=0
@@ -177,24 +251,30 @@
             $('.card-clear').remove()
 
 
-            // 關卡時間=關卡數*10
-            countdown = stage * 10
+            // 關卡時間=關卡數*30
+            countdown = stage * 30
 
             // 卡片的張數
-            const cards = stage * 2
+            const cards = stage * 2 + 2
             for (let i = 0; i < cards; i++) {
-                $('#game').append(
-                    `<div class="card-m">
+                $('.container-m').append(
+                    `
+                    <div class="card-m">
                         <div class="card-front"></div>
                         <div class="card-back"></div>
                     </div>
+                    `)
+            }
+
+            for (let i = 0; i < cards; i++) {
+                $('.container-s').append(
+                    `
                     <div class="card-s">
                         <div class="card-front"></div>
                         <div class="card-back"></div>
-                    </div>`)
+                    </div>
+                    `)
             }
-
-
 
             for (let i = 0; i < cards; i++) {
                 // 決定數字
