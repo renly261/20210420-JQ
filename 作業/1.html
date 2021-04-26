@@ -198,7 +198,7 @@
             $('#game').css({ background: 'url(./background/phhsqwwhhny.jpeg)', backgroundSize: 'cover', backgroundRepeat: ' no - repeat' })
 
             // 關卡時間=關卡數*30
-            countdown = stage * 10
+            countdown = stage * 30
 
             // 卡片的張數
             const cards = stage * 2 + 2
@@ -271,6 +271,7 @@
                     // 隱藏下一關按鈕
                     $('#btn-next').hide()
 
+                    // 跳出 sweetalert 視窗
                     const swalWithBootstrapButtons = Swal.mixin({
                         customClass: {
                             confirmButton: 'btn btn-success',
