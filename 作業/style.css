@@ -27,7 +27,7 @@ body {
 .rules {
   position: fixed;
   left: 35%;
-  top: 20%;
+  top: 10%;
   text-align: center;
   color: gold;
   font-size: 18px;
@@ -149,9 +149,9 @@ body {
   filter: hue-rotate(200deg);
   transition: 0.5s;
   /* 定位點 */
-  position: relative;
-  left: 220%;
-  top: 550px;
+  position: fixed;
+  left: 40%;
+  top: 70%;
   background: black;
   opacity: 0.8;
 }

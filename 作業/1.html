@@ -254,7 +254,7 @@
                 // 改顯示秒數
                 $('#text-time').text(countdown)
 
-                // 若秒數<=0 要做的事
+                // 若秒數<=0 要做的事---------------------------------------------------------------------------
                 if (countdown <= 0) {
 
                     $('.container-m').empty()
@@ -362,6 +362,42 @@
                     // 噴彩帶
                     con()
 
+                    // sweet alert
+                    const swalWithBootstrapButtons = Swal.mixin({
+                        customClass: {
+                            confirmButton: 'btn btn-success',
+                            cancelButton: 'btn btn-danger'
+                        },
+                        buttonsStyling: false
+                    })
+
+                    swalWithBootstrapButtons.fire({
+                        title: `時間到囉 你的分數是${score}`,
+                        text: "是否要在玩一次呢?",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: '是',
+                        cancelButtonText: '否',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            swalWithBootstrapButtons.fire(
+                                '再來一局',
+                                '請點選左上角的按鈕開始新的遊戲!',
+                                'success'
+                            )
+                        } else if (
+                            /* Read more about handling dismissals below */
+                            result.dismiss === Swal.DismissReason.cancel
+                        ) {
+                            swalWithBootstrapButtons.fire(
+                                '遊戲終止',
+                                '感謝您的遊玩,期待您再度到訪',
+                                'warning'
+                            )
+                        }
+
+                    })
                     // 遊戲結束後若目前分數>最高分
                     if (score > highscore.score) {
                         // 改掉最高分為目前分數
