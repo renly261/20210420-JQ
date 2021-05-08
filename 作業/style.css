@@ -39,8 +39,6 @@ body {
   position: fixed;
   left: 18%;
   top: 20%;
-
-  /* display 要寫在上層 */
   display: inline-flex;
   justify-content: flex-start;
   align-self: center;
@@ -64,8 +62,6 @@ body {
   position: fixed;
   left: 59%;
   top: 20%;
-
-  /* display 要寫在上層 */
   display: inline-flex;
   justify-content: flex-start;
   align-self: center;

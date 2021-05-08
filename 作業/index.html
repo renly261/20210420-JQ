@@ -16,7 +16,7 @@
 
 <body>
     <!--jQ -->
-    <script src="../jquery-3.6.0.min.js"></script>
+    <script src="./jquery-3.6.0.min.js"></script>
 
     <!-- sweetalert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
@@ -305,6 +305,7 @@
                                 'warning'
                             )
                         }
+
                     })
                 }
             }, 1000);
@@ -337,7 +338,7 @@
                 }, 1000)
             }
 
-            // 若翻對的組數(兩張一樣的一組)=卡片的張數(正反兩張疊在一張) 要做的事-----------------------------------------
+            // 若翻對的組數(兩張一樣的一組)=卡片的張數(正反兩張疊在一張) 要做的事--------------------------------------
             if ($('.card-clear').length == ($('.card-m').length + $('.card-s').length)) {
                 // 顯示下一關按鈕
                 $('#btn-next').show()
@@ -395,6 +396,7 @@
                                 'warning'
                             )
                         }
+
                     })
                     // 遊戲結束後若目前分數>最高分
                     if (score > highscore.score) {
@@ -453,6 +455,7 @@
                 top: '-=250px',
                 fontSize: '-=34px'
             }, 2000)
+
         })
     </script>
 </body>
